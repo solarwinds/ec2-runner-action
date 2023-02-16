@@ -1,0 +1,22 @@
+{
+  "plugins": ["@typescript-eslint"],
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:github/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/strict"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "root": true,
+  "rules": {
+    "camelcase": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "github/no-then": "off",
+    "i18n-text/no-en": "off",
+    "import/no-namespace": "off"
+  }
+}
