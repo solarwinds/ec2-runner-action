@@ -20,7 +20,7 @@ async function run() {
       core.info(
         `Runner ${runner.name} (${
           runner.id
-        }) with label "${label}" is online on EC2 instance ${instance.InstanceId!}`,
+        }) with label "${label}" is online on EC2 instance ${instance.InstanceId!} using AMI ${ami.Name!} (${ami.ImageId!})`,
       )
 
       core.setOutput("instance-id", instance.InstanceId)
