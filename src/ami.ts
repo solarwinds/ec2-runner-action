@@ -1,4 +1,3 @@
-import * as core from "@actions/core"
 import {
   DescribeImagesCommand,
   type DescribeImagesCommandInput,
@@ -7,7 +6,7 @@ import {
 import { type LaunchContext } from "./context"
 
 export async function selectAmi(ctx: LaunchContext): Promise<Image> {
-  core.debug("Selecting AMI")
+  ctx.debug("Selecting AMI")
 
   const input: DescribeImagesCommandInput = {
     ExecutableUsers: ["self"],
@@ -25,13 +24,13 @@ export async function selectAmi(ctx: LaunchContext): Promise<Image> {
       const output = await ctx.ec2.send(new DescribeImagesCommand(input))
 
       if (output.Images) {
-        core.debug(`Got ${output.Images.length} AMIs`)
+        ctx.debug(`Got ${output.Images.length} AMIs`)
         images = [...images, ...output.Images]
       }
 
       input.NextToken = output.NextToken
     } catch (error) {
-      core.error("Error selecting AMI")
+      ctx.error("Error selecting AMI")
       throw error
     }
   } while (input.NextToken)

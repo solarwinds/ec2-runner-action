@@ -1,4 +1,3 @@
-import * as core from "@actions/core"
 import {
   ResourceType,
   RunInstancesCommand,
@@ -15,7 +14,7 @@ export async function launchInstance(
   token: string,
   ami: Image,
 ): Promise<Instance> {
-  core.debug("Launching EC2 instance")
+  ctx.debug("Launching EC2 instance")
 
   const userData = [
     "#!/bin/sh",
@@ -43,13 +42,13 @@ export async function launchInstance(
     const output = await ctx.ec2.send(command)
     return output.Instances![0]!
   } catch (error) {
-    core.error("Error launching instance")
+    ctx.error("Error launching instance")
     throw error
   }
 }
 
 export async function terminateInstance(ctx: TerminateContext): Promise<void> {
-  core.debug("Terminating EC2 instance")
+  ctx.debug("Terminating EC2 instance")
 
   try {
     await ctx.ec2.send(
@@ -58,7 +57,7 @@ export async function terminateInstance(ctx: TerminateContext): Promise<void> {
       }),
     )
   } catch (error) {
-    core.error("Error terminating instance")
+    ctx.error("Error terminating instance")
     throw error
   }
 }
@@ -70,7 +69,7 @@ export async function waitForInstance(
   const MAX_WAIT_TIME = 5 * 60
 
   for (;;) {
-    core.debug("Waiting for EC2 instance to be running")
+    ctx.debug("Waiting for EC2 instance to be running")
     try {
       const result = await waitUntilInstanceRunning(
         { client: ctx.ec2, maxWaitTime: MAX_WAIT_TIME },
@@ -88,7 +87,7 @@ export async function waitForInstance(
         }
       }
     } catch (error) {
-      core.error("Error waiting for EC2 instance to be running")
+      ctx.error("Error waiting for EC2 instance to be running")
       throw error
     }
   }
