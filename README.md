@@ -118,8 +118,6 @@ terminate-runners:
 
 ## Matrix (complex)
 
-## Matrix (simple)
-
 ```yml
 launch-runners:
   runs-on: ubuntu-latest
