@@ -20,6 +20,8 @@ function errorMessage(error: unknown): string | Error {
 
 async function run() {
   const [action, isMatrix, ctxs] = getContext()
+  core.debug(inspect({ action, ctxs }, { depth: Infinity }))
+
   switch (action) {
     case "launch": {
       const tasks = ctxs.map((ctx) =>
