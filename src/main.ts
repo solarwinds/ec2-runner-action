@@ -18,6 +18,18 @@ function errorMessage(error: unknown): string | Error {
   }
 }
 
+/*
+start by parsing the context which will return which action is to be performed,
+whether the input was a matrix or not, and the an array of contexts for each runner
+(if it was not a matrix then there is a single element in the array)
+
+then for each context we perform the action as a promise and add the context to the error
+in case of failure. we wait for all promises to have either resolved or rejected and then
+collect the results. if any of the tasks fail we mark the entire job as failed but still make sure
+to add any successful runners to the output so they can be terminated. we log each error
+using the context that was added to it so that the user can see which runner failed
+*/
+
 async function run() {
   const [action, isMatrix, ctxs] = getContext()
   core.debug(inspect({ action, ctxs }, { depth: Infinity }))
