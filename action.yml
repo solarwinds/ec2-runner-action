@@ -1,0 +1,78 @@
+name: EC2 GitHub Actions Runner
+description: Launch and terminate self-hosted GitHub Actions runners on EC2
+author: SolarWinds Worldwide, LLC
+runs:
+  using: node16
+  main: dist/index.js
+
+inputs:
+  github-token:
+    description: GitHub token
+    required: true
+  action:
+    description: Action to perform (launch, terminate)
+    required: true
+
+  # launch
+
+  runner-user:
+    description: >-
+      User to run the runner as
+      Should be an existing user
+    required: false
+  runner-directory:
+    description: >-
+      Directory containing the runner scripts
+      Should be an existing directory
+    required: false
+
+  instance-type:
+    description: >-
+      EC2 instance type
+    required: false
+  subnet-id:
+    description: >-
+      Subnet ID
+      Should belong to the same VPC as the security groups
+    required: false
+  security-group-ids:
+    description: >-
+      Security group IDs
+      Can be multiline to select multiple security groups
+      Should belong to the same VPC as the subnet
+    required: false
+  tags:
+    description: >-
+      Custom resource tags to apply to the instance
+      Should follow the name=value format
+      Multiline with one tag per line
+
+  ami-name:
+    description: >-
+      Regex used to match AMI name
+    required: false
+  ami-owner:
+    description: >-
+      AMI owner ID or alias
+      Can be multiline to allow multiple owners
+  ami-filters:
+    description: >-
+      Custom AMI filters
+      Should follow the name=value format
+      Multiline with one filter per line
+    required: false
+
+  # terminate
+
+  instance-id:
+    description: EC2 instance ID
+    required: false
+  label:
+    description: Runner label
+    required: false
+
+outputs:
+  instance-id:
+    description: EC2 instance ID
+  label:
+    description: Runner label
