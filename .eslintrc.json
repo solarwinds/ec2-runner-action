@@ -14,6 +14,7 @@
   "root": true,
   "rules": {
     "camelcase": "off",
+    "prefer-promise-reject-errors": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "github/no-then": "off",
     "i18n-text/no-en": "off",

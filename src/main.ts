@@ -1,7 +1,12 @@
 import * as core from "@actions/core"
 import { inspect } from "node:util"
 import { selectAmi } from "./ami"
-import { getContext, type TerminateOptions } from "./context"
+import {
+  getContext,
+  type LaunchContext,
+  type TerminateContext,
+  type TerminateOptions,
+} from "./context"
 import { launchInstance, terminateInstance, waitForInstance } from "./instance"
 import { getRegistrationToken, removeRunner, waitForRunner } from "./runner"
 
@@ -17,24 +22,26 @@ async function run() {
   const [action, isMatrix, ctxs] = getContext()
   switch (action) {
     case "launch": {
-      const tasks = ctxs.map(async (ctx) => {
-        const label = ctx.generateLabel()
-        const token = await getRegistrationToken(ctx)
-        const ami = await selectAmi(ctx)
+      const tasks = ctxs.map((ctx) =>
+        (async () => {
+          const label = ctx.generateLabel()
+          const token = await getRegistrationToken(ctx)
+          const ami = await selectAmi(ctx)
 
-        const instance = await launchInstance(ctx, label, token, ami)
+          const instance = await launchInstance(ctx, label, token, ami)
 
-        await waitForInstance(ctx, instance)
-        const runner = await waitForRunner(ctx, label)
+          await waitForInstance(ctx, instance)
+          const runner = await waitForRunner(ctx, label)
 
-        ctx.info(
-          `Runner ${runner.name} (${
-            runner.id
-          }) with label "${label}" is online on EC2 instance ${instance.InstanceId!} using AMI ${ami.Name!} (${ami.ImageId!})`,
-        )
+          ctx.info(
+            `Runner ${runner.name} (${
+              runner.id
+            }) with label "${label}" is online on EC2 instance ${instance.InstanceId!} using AMI ${ami.Name!} (${ami.ImageId!})`,
+          )
 
-        return [ctx, instance.InstanceId!, label] as const
-      })
+          return [ctx, instance.InstanceId!, label] as const
+        })().catch((error) => Promise.reject([ctx, error])),
+      )
 
       const results = await Promise.allSettled(tasks)
       const output: Record<string, TerminateOptions> = {}
@@ -50,7 +57,8 @@ async function run() {
             core.setOutput("label", label)
           }
         } else {
-          core.error(errorMessage(result.reason))
+          const [ctx, error] = result.reason as [LaunchContext, unknown]
+          ctx.error(errorMessage(error))
           failed = true
         }
       }
@@ -63,21 +71,24 @@ async function run() {
       break
     }
     case "terminate": {
-      const tasks = ctxs.map(async (ctx) => {
-        await terminateInstance(ctx)
-        await removeRunner(ctx)
+      const tasks = ctxs.map((ctx) =>
+        (async () => {
+          await terminateInstance(ctx)
+          await removeRunner(ctx)
 
-        ctx.info(
-          `Runner with label "${ctx.label}" and EC2 instance ${ctx.instanceId} are offline`,
-        )
-      })
+          ctx.info(
+            `Runner with label "${ctx.label}" and EC2 instance ${ctx.instanceId} are offline`,
+          )
+        })().catch((error) => Promise.reject([ctx, error])),
+      )
 
       const results = await Promise.allSettled(tasks)
       let failed = false
 
       for (const result of results) {
         if (result.status === "rejected") {
-          core.error(errorMessage(result.reason))
+          const [ctx, error] = result.reason as [TerminateContext, unknown]
+          ctx.error(errorMessage(error))
           failed = true
         }
       }
