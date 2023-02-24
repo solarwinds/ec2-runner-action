@@ -1,6 +1,5 @@
-import * as core from "@actions/core"
 import {
-  type Context,
+  type CoreContext,
   type LaunchContext,
   type TerminateContext,
 } from "./context"
@@ -13,10 +12,10 @@ export interface Runner {
 }
 
 export async function getRunner(
-  ctx: Context,
+  ctx: CoreContext,
   label: string,
 ): Promise<Runner | undefined> {
-  core.debug(`Getting runner for label "${label}"`)
+  ctx.debug(`Getting runner for label "${label}"`)
 
   let runners: Runner[] = []
   for (let page = 1; ; page++) {
@@ -26,7 +25,7 @@ export async function getRunner(
       page,
     })
 
-    core.debug(`Got ${res.data.runners.length} runners`)
+    ctx.debug(`Got ${res.data.runners.length} runners`)
     runners = [...runners, ...res.data.runners]
 
     if (runners.length === res.data.total_count) {
@@ -38,7 +37,7 @@ export async function getRunner(
 export async function getRegistrationToken(
   ctx: LaunchContext,
 ): Promise<string> {
-  core.debug("Getting registration token")
+  ctx.debug("Getting registration token")
 
   try {
     const res = await ctx.octokit.request(
@@ -47,7 +46,7 @@ export async function getRegistrationToken(
     )
     return res.data.token
   } catch (error) {
-    core.error("Error getting registration token")
+    ctx.error("Error getting registration token")
     throw error
   }
 }
@@ -60,9 +59,9 @@ export async function waitForRunner(
   const INTERVAL = 10 * 1000
   const WAIT = 30 * 1000
 
-  core.debug("Waiting for runner to be online")
+  ctx.debug("Waiting for runner to be online")
 
-  core.debug(`Waiting ${WAIT}ms first`)
+  ctx.debug(`Waiting ${WAIT}ms first`)
   await new Promise((res) => setTimeout(res, WAIT))
 
   let waited = 0
@@ -75,7 +74,7 @@ export async function waitForRunner(
               clearInterval(interval)
               res(r)
             } else {
-              core.debug("Waiting for runner to be online")
+              ctx.debug("Waiting for runner to be online")
 
               waited += INTERVAL
               if (waited > TIMEOUT) {
@@ -85,7 +84,7 @@ export async function waitForRunner(
             }
           })
           .catch((err) => {
-            core.error("Error waiting for runner to be online")
+            ctx.error("Error waiting for runner to be online")
             rej(err)
           }),
       INTERVAL,
@@ -96,14 +95,12 @@ export async function waitForRunner(
 }
 
 export async function removeRunner(ctx: TerminateContext): Promise<void> {
-  core.debug("Removing runner")
+  ctx.debug("Removing runner")
 
   try {
     const runner = await getRunner(ctx, ctx.label)
     if (!runner) {
-      core.warning(
-        `Runner for label "${ctx.label}" not found, skipping removal`,
-      )
+      ctx.warning(`Runner for label "${ctx.label}" not found, skipping removal`)
       return
     }
 
@@ -112,7 +109,7 @@ export async function removeRunner(ctx: TerminateContext): Promise<void> {
       runner_id: runner.id,
     })
   } catch (error) {
-    core.error("Error removing runner")
+    ctx.error("Error removing runner")
     throw error
   }
 }

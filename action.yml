@@ -12,6 +12,11 @@ inputs:
   action:
     description: Action to perform (launch, terminate)
     required: true
+  matrix:
+    description: >-
+      Runner matrix to launch or terminate multiple at once
+      Can be a simple multiline input with one runner identified per line
+      Can also be a JSON object of identifiers mapping to options for each runner
 
   # launch
 
@@ -76,3 +81,7 @@ outputs:
     description: EC2 instance ID
   label:
     description: Runner label
+  matrix:
+    description: >-
+      Matrix of runners
+      JSON object of identifiers mapping to instance ID and label for each runner
