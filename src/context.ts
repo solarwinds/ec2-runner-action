@@ -124,7 +124,9 @@ function getMultiOption<T extends LaunchOptions | TerminateOptions>(
     return matrix[name] as string[] | undefined
   }
 
-  const value = core.getMultilineInput(name as string, options)
+  const value = core
+    .getMultilineInput(name as string, options)
+    .filter((v) => v !== "")
   return value.length > 0 ? value : undefined
 }
 
