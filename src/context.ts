@@ -30,7 +30,7 @@ export interface LaunchContext extends CoreContext {
 
   amiName?: RegExp
   amiOwners?: string[]
-  amiFilters: [string, string][]
+  amiFilters?: [string, string][]
 
   generateLabel(): string
 }
@@ -252,8 +252,9 @@ export function getContext(): Context {
 
           amiName: amiName ? new RegExp(amiName) : undefined,
           amiOwners,
-          amiFilters:
-            amiFilters?.map((f) => f.split("=", 2) as [string, string]) ?? [],
+          amiFilters: amiFilters?.map(
+            (f) => f.split("=", 2) as [string, string],
+          ),
         }
       })
 
