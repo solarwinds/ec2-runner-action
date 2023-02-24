@@ -9,7 +9,6 @@ export async function selectAmi(ctx: LaunchContext): Promise<Image> {
   ctx.debug("Selecting AMI")
 
   const input: DescribeImagesCommandInput = {
-    ExecutableUsers: ["self"],
     Owners: ctx.amiOwners,
     Filters: ctx.amiFilters?.map(([name, value]) => ({
       Name: name,
