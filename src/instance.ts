@@ -22,7 +22,7 @@ export async function launchInstance(
     `sudo -u ${ctx.runnerUser} ./config.sh --unattended --url https://github.com/${ctx.github.repo.owner}/${ctx.github.repo.repo} --labels ${label} --token ${token}`,
     `sudo -u ${ctx.runnerUser} ./run.sh`,
   ]
-  const tags = ctx.tags.map(([key, value]) => ({ Key: key, Value: value }))
+  const tags = ctx.tags?.map(([key, value]) => ({ Key: key, Value: value }))
 
   const command = new RunInstancesCommand({
     MinCount: 1,
@@ -32,7 +32,7 @@ export async function launchInstance(
     InstanceType: ctx.instanceType,
     SubnetId: ctx.subnetId,
     SecurityGroupIds: ctx.securityGroupIds,
-    TagSpecifications: [
+    TagSpecifications: tags && [
       { ResourceType: ResourceType.instance, Tags: tags },
       { ResourceType: ResourceType.volume, Tags: tags },
     ],

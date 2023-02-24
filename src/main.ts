@@ -32,7 +32,7 @@ using the context that was added to it so that the user can see which runner fai
 
 async function run() {
   const [action, isMatrix, ctxs] = getContext()
-  core.debug(inspect({ action, ctxs }, { depth: 6 }))
+  core.debug(inspect({ action, ctxs }, { depth: 4 }))
 
   switch (action) {
     case "launch": {

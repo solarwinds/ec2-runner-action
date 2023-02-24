@@ -26,7 +26,7 @@ export interface LaunchContext extends CoreContext {
   instanceType: string
   subnetId: string
   securityGroupIds: string[]
-  tags: [string, string][]
+  tags?: [string, string][]
 
   amiName?: RegExp
   amiOwners?: string[]
@@ -248,7 +248,7 @@ export function getContext(): Context {
           instanceType,
           subnetId,
           securityGroupIds: securityGroupIds ?? [],
-          tags: tags?.map((t) => t.split("=", 2) as [string, string]) ?? [],
+          tags: tags?.map((t) => t.split("=", 2) as [string, string]),
 
           amiName: amiName ? new RegExp(amiName) : undefined,
           amiOwners,
