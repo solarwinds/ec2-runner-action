@@ -3,6 +3,7 @@ import {
   type DescribeImagesCommandInput,
   type Image,
 } from "@aws-sdk/client-ec2"
+import { inspect } from "node:util"
 import { type LaunchContext } from "./context"
 
 export async function selectAmi(ctx: LaunchContext): Promise<Image> {
@@ -42,7 +43,8 @@ export async function selectAmi(ctx: LaunchContext): Promise<Image> {
     throw new Error("No AMIs found matching filters")
   }
 
-  return images.sort((a, b) =>
-    b.CreationDate!.localeCompare(a.CreationDate!),
-  )[0]
+  images.sort((a, b) => b.CreationDate!.localeCompare(a.CreationDate!))
+  ctx.debug(inspect(images))
+
+  return images[0]
 }
