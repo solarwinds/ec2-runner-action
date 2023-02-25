@@ -42,9 +42,7 @@ export async function selectAmi(ctx: LaunchContext): Promise<Image> {
     throw new Error("No AMIs found matching filters")
   }
 
-  return images.sort(
-    (a, b) =>
-      new Date(b.CreationDate ?? 0).getUTCSeconds() -
-      new Date(a.CreationDate ?? 0).getUTCSeconds(),
+  return images.sort((a, b) =>
+    b.CreationDate!.localeCompare(a.CreationDate!),
   )[0]
 }
