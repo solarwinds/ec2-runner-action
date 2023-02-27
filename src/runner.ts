@@ -65,33 +65,20 @@ export async function waitForRunner(
   await new Promise((res) => setTimeout(res, WAIT))
 
   let waited = 0
-  const runner = await new Promise<Runner>((res, rej) => {
-    const interval = setInterval(
-      () =>
-        void getRunner(ctx, label)
-          .then((r) => {
-            if (r && r.status === "online") {
-              clearInterval(interval)
-              res(r)
-            } else {
-              ctx.debug("Waiting for runner to be online")
+  for (;;) {
+    const runner = await getRunner(ctx, label)
+    if (runner && runner.status === "online") {
+      return runner
+    }
 
-              waited += INTERVAL
-              if (waited > TIMEOUT) {
-                clearInterval(interval)
-                rej(new Error("Timed out waiting for runner to be online"))
-              }
-            }
-          })
-          .catch((err) => {
-            ctx.error("Error waiting for runner to be online")
-            rej(err)
-          }),
-      INTERVAL,
-    )
-  })
+    if (waited > TIMEOUT) {
+      throw new Error("Timed out waiting for runner to be online")
+    }
 
-  return runner
+    ctx.debug("Waiting for runner to be online")
+    await new Promise((res) => setTimeout(res, INTERVAL))
+    waited += INTERVAL
+  }
 }
 
 export async function removeRunner(ctx: TerminateContext): Promise<void> {
