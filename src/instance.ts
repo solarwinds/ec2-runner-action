@@ -7,6 +7,7 @@ import {
   type Image,
   type Instance,
 } from "@aws-sdk/client-ec2"
+import { inspect } from "node:util"
 import {
   type CoreContext,
   type LaunchContext,
@@ -117,6 +118,7 @@ async function retryIfRateLimited<T>(
         retried >= retries ||
         !(err instanceof EC2ServiceException && err.$retryable)
       ) {
+        ctx.debug(inspect(err))
         throw err
       }
 
