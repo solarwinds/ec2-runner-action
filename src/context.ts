@@ -26,11 +26,11 @@ export interface LaunchContext extends CoreContext {
   instanceType: string
   subnetId: string
   securityGroupIds: string[]
-  tags: [string, string][]
+  tags?: [string, string][]
 
   amiName?: RegExp
   amiOwners?: string[]
-  amiFilters: [string, string][]
+  amiFilters?: [string, string][]
 
   generateLabel(): string
 }
@@ -124,7 +124,9 @@ function getMultiOption<T extends LaunchOptions | TerminateOptions>(
     return matrix[name] as string[] | undefined
   }
 
-  const value = core.getMultilineInput(name as string, options)
+  const value = core
+    .getMultilineInput(name as string, options)
+    .filter((v) => v !== "")
   return value.length > 0 ? value : undefined
 }
 
@@ -246,12 +248,13 @@ export function getContext(): Context {
           instanceType,
           subnetId,
           securityGroupIds: securityGroupIds ?? [],
-          tags: tags?.map((t) => t.split("=", 2) as [string, string]) ?? [],
+          tags: tags?.map((t) => t.split("=", 2) as [string, string]),
 
           amiName: amiName ? new RegExp(amiName) : undefined,
           amiOwners,
-          amiFilters:
-            amiFilters?.map((f) => f.split("=", 2) as [string, string]) ?? [],
+          amiFilters: amiFilters?.map(
+            (f) => f.split("=", 2) as [string, string],
+          ),
         }
       })
 
