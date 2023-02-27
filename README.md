@@ -15,13 +15,13 @@ launch-runner:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
     - id: launch
-      uses: solarwindscloud/ec2-runner-action@master
+      uses: solarwindscloud/ec2-runner-action@main
       with:
         action: launch
         github-token: ${{ secrets.GITHUB_TOKEN }}
         runner-user: github # existing user
         runner-directory: /github/actions # existing directory containing the runner scripts
-        instance-type: t4g-medium
+        instance-type: t4g.medium
         ami-name: actions-runner-.+ # the most recent ami matching this regex will be picked
         ami-owner: abc12 # only amis from this owner will be considered
         subnet-id: def34
@@ -47,7 +47,7 @@ terminate-runner:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
-    - uses: solarwindscloud/ec2-runner-action@master
+    - uses: solarwindscloud/ec2-runner-action@main
       with:
         action: terminate
         github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -69,7 +69,7 @@ launch-runners:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
     - id: launch
-      uses: solarwindscloud/ec2-runner-action@master
+      uses: solarwindscloud/ec2-runner-action@main
       with:
         action: launch
         matrix: | # one identifier per line
@@ -78,7 +78,7 @@ launch-runners:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         runner-user: github
         runner-directory: /github/actions
-        instance-type: t4g-medium
+        instance-type: t4g.medium
         ami-name: actions-runner-.+
         ami-owner: abc12
         subnet-id: def34
@@ -109,7 +109,7 @@ terminate-runners:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
-    - uses: solarwindscloud/ec2-runner-action@master
+    - uses: solarwindscloud/ec2-runner-action@main
       with:
         action: terminate
         github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -130,7 +130,7 @@ launch-runners:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
     - id: launch
-      uses: solarwindscloud/ec2-runner-action@master
+      uses: solarwindscloud/ec2-runner-action@main
       with:
         action: launch
         matrix: | # everything is provided as json
@@ -138,7 +138,7 @@ launch-runners:
             "job1": {
               "runner-user": "github",
               "runner-directory": "/github/actions",
-              "instance-type": "t4g-medium",
+              "instance-type": "t4g.medium",
               "ami-name": "actions-runner-1-.+",
               "ami-owner": ["acb12"],
               "subnet-id": "def32",
@@ -150,7 +150,7 @@ launch-runners:
             "job2": {
               "runner-user": "github",
               "runner-directory": "/github/actions",
-              "instance-type": "t4g-medium",
+              "instance-type": "t4g.medium",
               "ami-name": "actions-runner-2-.+",
               "ami-owner": ["acb12"],
               "subnet-id": "def32",
@@ -183,7 +183,7 @@ terminate-runners:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
-    - uses: solarwindscloud/ec2-runner-action@master
+    - uses: solarwindscloud/ec2-runner-action@main
       with:
         action: terminate
         github-token: ${{ secrets.GITHUB_TOKEN }}
