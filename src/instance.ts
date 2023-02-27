@@ -7,6 +7,7 @@ import {
   type Image,
   type Instance,
 } from "@aws-sdk/client-ec2"
+import { isThrottlingError } from "@aws-sdk/service-error-classification"
 import { inspect } from "node:util"
 import {
   type CoreContext,
@@ -116,7 +117,7 @@ async function retryIfRateLimited<T>(
     } catch (err) {
       if (
         retried >= retries ||
-        !(err instanceof EC2ServiceException && err.$retryable)
+        !(err instanceof EC2ServiceException && isThrottlingError(err))
       ) {
         ctx.debug(inspect(err))
         throw err
