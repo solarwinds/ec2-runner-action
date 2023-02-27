@@ -119,7 +119,6 @@ async function retryIfRateLimited<T>(
         retried >= retries ||
         !(err instanceof EC2ServiceException && isThrottlingError(err))
       ) {
-        ctx.debug(inspect(err))
         throw err
       }
 
