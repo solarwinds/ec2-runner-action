@@ -3,10 +3,15 @@ import {
   RunInstancesCommand,
   TerminateInstancesCommand,
   waitUntilInstanceRunning,
+  EC2ServiceException,
   type Image,
   type Instance,
 } from "@aws-sdk/client-ec2"
-import { type LaunchContext, type TerminateContext } from "./context"
+import {
+  type CoreContext,
+  type LaunchContext,
+  type TerminateContext,
+} from "./context"
 
 export async function launchInstance(
   ctx: LaunchContext,
@@ -39,7 +44,7 @@ export async function launchInstance(
   })
 
   try {
-    const output = await ctx.ec2.send(command)
+    const output = await retryIfRateLimited(ctx, () => ctx.ec2.send(command))
     return output.Instances![0]!
   } catch (error) {
     ctx.error("Error launching instance")
@@ -51,10 +56,12 @@ export async function terminateInstance(ctx: TerminateContext): Promise<void> {
   ctx.debug("Terminating EC2 instance")
 
   try {
-    await ctx.ec2.send(
-      new TerminateInstancesCommand({
-        InstanceIds: [ctx.instanceId],
-      }),
+    await retryIfRateLimited(ctx, () =>
+      ctx.ec2.send(
+        new TerminateInstancesCommand({
+          InstanceIds: [ctx.instanceId],
+        }),
+      ),
     )
   } catch (error) {
     ctx.error("Error terminating instance")
@@ -91,4 +98,33 @@ export async function waitForInstance(
       throw error
     }
   }
+}
+
+function retryIfRateLimited<T>(
+  ctx: CoreContext,
+  op: () => Promise<T>,
+  options?: { timeout?: number; retries?: number },
+): Promise<T> {
+  const timeout = options?.timeout ?? 10 * 1000
+  const retries = options?.retries ?? 6
+
+  let retried = 0
+  return new Promise((res, rej) => {
+    const interval = setInterval(() => {
+      op()
+        .then((r) => res(r))
+        .catch((err) => {
+          retried += 1
+          if (
+            retried >= retries ||
+            !(err instanceof EC2ServiceException && err.$retryable)
+          ) {
+            clearInterval(interval)
+            return rej(err)
+          }
+
+          ctx.debug("Rate limited")
+        })
+    }, timeout)
+  })
 }
