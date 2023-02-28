@@ -8,7 +8,6 @@ import {
   type Instance,
 } from "@aws-sdk/client-ec2"
 import { isThrottlingError } from "@aws-sdk/service-error-classification"
-import { inspect } from "node:util"
 import {
   type CoreContext,
   type LaunchContext,
