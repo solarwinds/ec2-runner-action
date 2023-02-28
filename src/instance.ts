@@ -7,6 +7,7 @@ import {
   type Image,
   type Instance,
 } from "@aws-sdk/client-ec2"
+import { isThrottlingError } from "@aws-sdk/service-error-classification"
 import {
   type CoreContext,
   type LaunchContext,
@@ -100,7 +101,7 @@ export async function waitForInstance(
   }
 }
 
-function retryIfRateLimited<T>(
+async function retryIfRateLimited<T>(
   ctx: CoreContext,
   op: () => Promise<T>,
   options?: { timeout?: number; retries?: number },
@@ -109,22 +110,20 @@ function retryIfRateLimited<T>(
   const retries = options?.retries ?? 6
 
   let retried = 0
-  return new Promise((res, rej) => {
-    const interval = setInterval(() => {
-      op()
-        .then((r) => res(r))
-        .catch((err) => {
-          retried += 1
-          if (
-            retried >= retries ||
-            !(err instanceof EC2ServiceException && err.$retryable)
-          ) {
-            clearInterval(interval)
-            return rej(err)
-          }
+  for (;;) {
+    try {
+      return await op()
+    } catch (err) {
+      if (
+        retried >= retries ||
+        !(err instanceof EC2ServiceException && isThrottlingError(err))
+      ) {
+        throw err
+      }
 
-          ctx.debug("Rate limited")
-        })
-    }, timeout)
-  })
+      ctx.debug("Rate limited")
+      retried += 1
+      await new Promise((res) => setTimeout(res, timeout))
+    }
+  }
 }
