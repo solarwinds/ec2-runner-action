@@ -14,7 +14,7 @@
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.1.1",
-    "@aws-sdk/client-ec2": "^3.279.0",
+    "@aws-sdk/client-ec2": "^3.350.0",
     "@aws-sdk/service-error-classification": "^3.272.0",
     "zod": "^3.20.6"
   },
