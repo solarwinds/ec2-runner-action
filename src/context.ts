@@ -133,10 +133,18 @@ function getMultiOption<T extends LaunchOptions | TerminateOptions>(
 function loggers(id: string): Loggers {
   const prefix = `[${id}] `
   return {
-    debug: (msg) => core.debug(`${prefix}${msg}`),
-    info: (msg) => core.info(`${prefix}${msg}`),
-    warning: (msg) => core.warning(`${prefix}${msg.toString()}`),
-    error: (msg) => core.error(`${prefix}${msg.toString()}`),
+    debug: (msg) => {
+      core.debug(`${prefix}${msg}`)
+    },
+    info: (msg) => {
+      core.info(`${prefix}${msg}`)
+    },
+    warning: (msg) => {
+      core.warning(`${prefix}${msg.toString()}`)
+    },
+    error: (msg) => {
+      core.error(`${prefix}${msg.toString()}`)
+    },
   }
 }
 

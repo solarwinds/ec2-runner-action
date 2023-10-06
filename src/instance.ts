@@ -1,13 +1,13 @@
 import {
+  EC2ServiceException,
   ResourceType,
   RunInstancesCommand,
   TerminateInstancesCommand,
   waitUntilInstanceRunning,
-  EC2ServiceException,
   type Image,
   type Instance,
 } from "@aws-sdk/client-ec2"
-import { isThrottlingError } from "@aws-sdk/service-error-classification"
+import { isThrottlingError } from "@smithy/service-error-classification"
 import {
   type CoreContext,
   type LaunchContext,

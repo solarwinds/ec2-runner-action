@@ -114,4 +114,6 @@ async function run() {
   }
 }
 
-run().catch((error) => core.setFailed(errorMessage(error)))
+run().catch((error) => {
+  core.setFailed(errorMessage(error))
+})

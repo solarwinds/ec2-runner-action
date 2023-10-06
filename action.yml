@@ -2,7 +2,7 @@ name: EC2 GitHub Actions Runner
 description: Launch and terminate self-hosted GitHub Actions runners on EC2
 author: SolarWinds Worldwide, LLC
 runs:
-  using: node16
+  using: node20
   main: dist/index.js
 
 inputs:
